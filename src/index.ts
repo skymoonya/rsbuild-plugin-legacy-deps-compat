@@ -37,6 +37,7 @@ export default function rsbuildPluginLegacyDeps(opts: Options = {}): RsbuildPlug
     moduleAlias.addAlias('webpack', require.resolve('webpack-v5').replace(/(.*[\\/]webpack).*/, '$1'));
   }
   if (options.postcss) {
+    // https://github.com/web-infra-dev/rsbuild/blob/v0.5.4/packages/shared/src/css.ts#L71-L73
     moduleAlias.addAlias('../compiled/postcss-load-config', require.resolve('../postcss-load-config.cjs'));
   }
   return {
