@@ -1,0 +1,44 @@
+{
+  "name": "rsbuild-plugin-legacy-deps",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "release": "release-it",
+    "build": "pnpm clean && unbuild",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "rsbuild",
+    "plugin",
+    "webpack",
+    "postcss",
+    "legacy"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "module-alias": "^2.2.3",
+    "postcss-load-config": "^5.0.3",
+    "webpack-v5": "npm:webpack@^5.0.0"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^0.5.4",
+    "release-it": "^17.1.1",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.4.3",
+    "unbuild": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@rsbuild/core": "^0.5.4"
+  }
+}
