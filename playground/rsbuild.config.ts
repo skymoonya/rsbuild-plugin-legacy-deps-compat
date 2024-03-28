@@ -3,7 +3,14 @@ import { pluginVue } from "@rsbuild/plugin-vue";
 import pluginLegacyDeps from '../src';
 
 export default defineConfig({
-    plugins: [pluginVue(), pluginLegacyDeps()],
+    plugins: [
+        pluginVue(),
+        pluginLegacyDeps({
+            postcss: {
+                configDir: 'compat'
+            }
+        }),
+    ],
     source: {
         entry: {
             index: './src/main.js'

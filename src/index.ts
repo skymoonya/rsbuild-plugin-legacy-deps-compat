@@ -2,20 +2,36 @@ import { logger, type RsbuildPlugin } from '@rsbuild/core';
 import moduleAlias from 'module-alias';
 import postcssrc from 'postcss-load-config';
 import { createRequire } from 'module';
+import path from 'path';
 
 export type Options = {
+  /**
+   * Whether to set an alias for webpack
+   * @default true
+   */
   webpack?: boolean;
   postcss?: {
+    /**
+     * Whether to clear the built-in plugins
+     * @default true
+     */
     clearBuiltinPlugins?: boolean;
-  } | boolean;
+    /**
+     * Postcss config directory
+     * @default process.cwd()
+     */
+    configDir?: string;
+  } | false;
 }
 
 export default function rsbuildPluginLegacyDeps(opts: Options = {}): RsbuildPlugin {
-  const defaultOptions: Options = {
-    webpack: true,
-    postcss: { clearBuiltinPlugins: true },
+  const options: Options = {
+    webpack: opts.webpack ?? true,
+    postcss: opts.postcss === false ? false : {
+      clearBuiltinPlugins: opts.postcss?.clearBuiltinPlugins ?? true,
+      configDir: opts.postcss?.configDir ?? '',
+    },
   }
-  const options = Object.assign(defaultOptions, opts);
   const require = createRequire(import.meta.url);
   if (options.webpack) {
     moduleAlias.addAlias('webpack', require.resolve('webpack-v5').replace(/(.*[\\/]webpack).*/, '$1'));
@@ -26,10 +42,10 @@ export default function rsbuildPluginLegacyDeps(opts: Options = {}): RsbuildPlug
   return {
     name: 'plugin:legacy-deps',
     setup(api) {
-      if (options.postcss) {
-        api.modifyRsbuildConfig(async (config, { mergeRsbuildConfig }) => {
+      api.modifyRsbuildConfig(async (config, { mergeRsbuildConfig }) => {
+        if (options.postcss) {
           try {
-            const postcssOptions = await postcssrc();
+            const postcssOptions = await postcssrc({}, path.resolve(options.postcss.configDir!));
             return mergeRsbuildConfig(config, {
               tools: {
                 postcss(opts) {
@@ -45,8 +61,8 @@ export default function rsbuildPluginLegacyDeps(opts: Options = {}): RsbuildPlug
           } catch(e: any) {
             logger.warn(`[plugin:legacy-deps] ${e.message ?? e}`);
           }
-        });
-      }
+        }
+      });
     },
   }
 }
