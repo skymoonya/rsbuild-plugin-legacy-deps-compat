@@ -41,7 +41,7 @@ export default function rsbuildPluginLegacyDeps(opts: Options = {}): RsbuildPlug
     moduleAlias.addAlias('../compiled/postcss-load-config', require.resolve('../postcss-load-config.cjs'));
   }
   return {
-    name: 'plugin:legacy-deps',
+    name: 'plugin:legacy-deps-compat',
     setup(api) {
       api.modifyRsbuildConfig(async (config, { mergeRsbuildConfig }) => {
         if (options.postcss) {

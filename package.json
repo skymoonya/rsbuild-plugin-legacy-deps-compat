@@ -1,5 +1,5 @@
 {
-  "name": "rsbuild-plugin-legacy-deps",
+  "name": "rsbuild-plugin-legacy-deps-compat",
   "version": "0.0.0",
   "description": "",
   "type": "module",
