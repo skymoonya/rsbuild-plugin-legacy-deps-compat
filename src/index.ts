@@ -22,7 +22,9 @@ export type Options = {
      */
     configDir?: string;
   } | false;
-}
+};
+
+const pluginName = 'plugin:legacy-deps-compat';
 
 export default function rsbuildPluginLegacyDeps(opts: Options = {}): RsbuildPlugin {
   const options: Options = {
@@ -41,7 +43,7 @@ export default function rsbuildPluginLegacyDeps(opts: Options = {}): RsbuildPlug
     moduleAlias.addAlias('../compiled/postcss-load-config', require.resolve('../postcss-load-config.cjs'));
   }
   return {
-    name: 'plugin:legacy-deps-compat',
+    name: pluginName,
     setup(api) {
       api.modifyRsbuildConfig(async (config, { mergeRsbuildConfig }) => {
         if (options.postcss) {
@@ -55,12 +57,12 @@ export default function rsbuildPluginLegacyDeps(opts: Options = {}): RsbuildPlug
                       postcssOptions.plugins.push(...opts.postcssOptions.plugins as any);
                     }
                   }
-                  return Object.assign(config, { postcssOptions });
+                  opts.postcssOptions = postcssOptions;
                 },
               },
             });
           } catch(e: any) {
-            logger.warn(`[plugin:legacy-deps] ${e.message ?? e}`);
+            logger.warn(`[${pluginName}] ${e.message ?? e}`);
           }
         }
       });
