@@ -14,7 +14,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "release": "release-it",
-    "build": "pnpm clean && unbuild",
+    "build": "npm run clean && unbuild",
     "clean": "rimraf dist"
   },
   "keywords": [
