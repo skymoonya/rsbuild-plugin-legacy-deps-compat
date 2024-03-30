@@ -1,11 +1,11 @@
 import { defineConfig } from "@rsbuild/core";
 import { pluginVue } from "@rsbuild/plugin-vue";
-import pluginLegacyDeps from '../src';
+import legacyDepsCompat from '../src';
 
 export default defineConfig({
     plugins: [
         pluginVue(),
-        pluginLegacyDeps({
+        legacyDepsCompat({
             postcss: {
                 configDir: 'compat'
             }

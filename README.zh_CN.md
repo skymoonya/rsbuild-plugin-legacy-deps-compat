@@ -4,6 +4,23 @@
 
 假设有一个老项目，这个项目使用了`webpack@4.x`和`postcss@7.x`，你想使用`rsbuild`来为开发和构建提效，但同时又想保留原有的构建方式。这时你可能会发现报错了，这个插件尝试解决这个问题，目前支持解决`webpack`和`postcss`相关的报错
 
+## 快速开始
+1. 安装依赖
+```
+npm i rsbuild-plugin-legacy-deps-compat -D
+```
+2. 配置 rsbuild
+```js
+import { defineConfig } from'@rsbuild/core'
+import legacyDepsCompat from'rsbuild-plugin-legacy-deps-compat'
+
+// https://rsbuild.dev/config/
+export default defineConfig({
+  plugins: [legacyDepsCompat()]
+})
+
+```
+
 ## 配置
 
 | 名称                         | 类型            | 默认值  | 描述                                     |
