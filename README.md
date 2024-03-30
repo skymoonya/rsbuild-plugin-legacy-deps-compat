@@ -16,10 +16,10 @@ import legacyDepsCompat from'rsbuild-plugin-legacy-deps-compat'
 
 export default defineConfig({
   plugins: [
-    // The project is using any version of webpack with postcss@7.x.
+    // The project is using any version of webpack and postcss@7.x.
     legacyDepsCompat(),
 
-    // The project is using any version of webpack with postcss@<7, but want to use postcss@8 in rsbuild.
+    // The project is using any version of webpack and postcss@<7, but want to use postcss@8 in rsbuild.
     legacyDepsCompat({
       // Place the postcss.config.js file in the "compat" directory.
       configDir: 'compat',
