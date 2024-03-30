@@ -19,6 +19,7 @@
   },
   "keywords": [
     "rsbuild",
+    "rsbuild-plugin",
     "plugin",
     "webpack",
     "postcss",
@@ -44,5 +45,16 @@
   "files": [
     "dist",
     "postcss-load-config.cjs"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skymoonya/rsbuild-plugin-legacy-deps-compat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/skymoonya/rsbuild-plugin-legacy-deps-compat/issues"
+  },
+  "homepage": "https://github.com/skymoonya/rsbuild-plugin-legacy-deps-compat#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  }
 }
