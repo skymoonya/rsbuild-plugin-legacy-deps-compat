@@ -14,18 +14,33 @@ npm i rsbuild-plugin-legacy-deps-compat -D
 import { defineConfig } from'@rsbuild/core'
 import legacyDepsCompat from'rsbuild-plugin-legacy-deps-compat'
 
-// https://rsbuild.dev/config/
 export default defineConfig({
-  plugins: [legacyDepsCompat()]
-})
+  plugins: [
+    // The project is using any version of webpack with postcss@7.x.
+    legacyDepsCompat(),
 
+    // The project is using any version of webpack with postcss@<7, but want to use postcss@8 in rsbuild.
+    legacyDepsCompat({
+      // Place the postcss.config.js file in the "compat" directory.
+      configDir: 'compat',
+    }),
+
+    // The project is using any version of webpack and want to use the previously existing postcss in the project.
+    legacyDepsCompat({
+      customPostcssLoaderOptions: {
+        // Enter the configuration for postcss-loader here.
+      }
+    }),
+  ]
+})
 ```
 
 ## Configuration
 
-| Name                        | Type            | Default| Description                                                    |
-| --------------------------- | --------------- | ------ | -------------------------------------------------------------- |
-| webpack                     | `boolean`       | `true` | Whether to set an alias for `webpack`                          |
-| postcss                     | `false\|object` | `{}`   | `postcss` related configuration, set to `false` for no changes |
-| postcss.clearBuiltinPlugins | `boolean`       | `true` | Whether to clear built-in `postcss` plugins                    |
-| postcss.configDir           | `string`        | `./`   | The directory where the `postcss` configuration file is located|
+| Name                              | Type            | Default    | Description                                                    |
+| --------------------------------- | --------------- | ---------- | -------------------------------------------------------------- |
+| webpack                           | `boolean`       | `true`     | Whether to set an alias for `webpack`                          |
+| postcss                           | `false\|object` | `{}`       | `postcss` related configuration, set to `false` for no changes |
+| postcss.clearBuiltinPlugins       | `boolean`       | `true`     | Whether to clear built-in `postcss` plugins                    |
+| postcss.configDir                 | `string`        | `./`       | The directory where the `postcss` configuration file is located|
+| postcss.customPostcssLoaderOptions| `any`           | `undefined`| `postcss-loader` options, setting this will use a custom `postcss-loader`. Make sure you have installed `postcss-loader`和`postcss`.|

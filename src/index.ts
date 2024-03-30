@@ -10,6 +10,14 @@ export type Options = {
    * @default true
    */
   webpack?: boolean;
+  /**
+   * postcss config
+   * @default
+   * {
+   *   clearBuiltinPlugins： true,
+   *   configDir: './'
+   * }
+   */
   postcss?: {
     /**
      * Whether to clear the built-in plugins
@@ -18,24 +26,24 @@ export type Options = {
     clearBuiltinPlugins?: boolean;
     /**
      * Postcss config directory
-     * @default process.cwd()
+     * @default './'
      */
     configDir?: string;
+    /**
+     * This is a custom postcss-loader options, setting this will use a custom postcss-loader.
+     * Make sure you have installed postcss-loader and postcss.
+     * If this option is set, other postcss options will become invalid.
+     * @default undefined
+     */
+    customPostcssLoaderOptions?: any;
   } | false;
 };
 
 const pluginName = 'plugin:legacy-deps-compat';
 
-export default function rsbuildPluginLegacyDeps(opts: Options = {}): RsbuildPlugin {
-  const options: Options = {
-    webpack: opts.webpack ?? true,
-    postcss: opts.postcss === false ? false : {
-      clearBuiltinPlugins: opts.postcss?.clearBuiltinPlugins ?? true,
-      configDir: opts.postcss?.configDir ?? '',
-    },
-  }
+export default function rsbuildPluginLegacyDeps(options: Options = {}): RsbuildPlugin {
   const require = createRequire(import.meta.url);
-  if (options.webpack) {
+  if (options.webpack !== false) {
     moduleAlias.addAlias('webpack', require.resolve('webpack-v5').replace(/(.*[\\/]webpack).*/, '$1'));
   }
   if (options.postcss) {
@@ -45,27 +53,44 @@ export default function rsbuildPluginLegacyDeps(opts: Options = {}): RsbuildPlug
   return {
     name: pluginName,
     setup(api) {
-      api.modifyRsbuildConfig(async (config, { mergeRsbuildConfig }) => {
-        if (options.postcss) {
-          try {
-            const postcssOptions = await postcssrc({}, path.resolve(options.postcss.configDir!));
-            return mergeRsbuildConfig(config, {
-              tools: {
-                postcss(opts) {
-                  if (typeof options.postcss === 'object' && options.postcss.clearBuiltinPlugins === false) {
-                    if (postcssOptions.plugins && opts.postcssOptions?.plugins) {
+      if (options.postcss) {
+        const { configDir = '', clearBuiltinPlugins = true, customPostcssLoaderOptions } = options.postcss;
+        if (customPostcssLoaderOptions) {
+          const projectRequire = createRequire(path.resolve('index.js'));
+          api.modifyBundlerChain((chain, { CHAIN_ID }) => {
+            const ruleIds = [
+              CHAIN_ID.RULE.CSS,
+              CHAIN_ID.RULE.SASS,
+              CHAIN_ID.RULE.LESS,
+              CHAIN_ID.RULE.STYLUS,
+            ];
+            const postcssLoaderPath = projectRequire.resolve('postcss-loader');
+            for (const ruleId of ruleIds) {
+              if (!chain.module.rules.has(ruleId)) continue;
+              chain.module.rule(ruleId).use('postcss').loader(postcssLoaderPath).options(customPostcssLoaderOptions);
+            }
+          });
+        } else {
+          api.modifyRsbuildConfig(async (config, { mergeRsbuildConfig }) => {
+            try {
+              const postcssOptions = await postcssrc({}, path.resolve(configDir!));
+              return mergeRsbuildConfig(config, {
+                tools: {
+                  postcss(opts) {
+                    if (!clearBuiltinPlugins && opts.postcssOptions?.plugins) {
+                      if (!postcssOptions.plugins) postcssOptions.plugins = [];
                       postcssOptions.plugins.push(...opts.postcssOptions.plugins as any);
                     }
-                  }
-                  opts.postcssOptions = postcssOptions;
+                    opts.postcssOptions = postcssOptions;
+                  },
                 },
-              },
-            });
-          } catch(e: any) {
-            logger.warn(`[${pluginName}] ${e.message ?? e}`);
-          }
+              });
+            } catch(e: any) {
+              logger.warn(`[${pluginName}] ${e.message ?? e}`);
+            }
+          });
         }
-      });
+      }
     },
-  }
+  };
 }

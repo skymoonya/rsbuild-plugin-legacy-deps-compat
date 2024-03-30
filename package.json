@@ -13,7 +13,7 @@
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "release": "release-it",
+    "release": "release-it --increment minor",
     "build": "npm run clean && unbuild",
     "clean": "rimraf dist"
   },

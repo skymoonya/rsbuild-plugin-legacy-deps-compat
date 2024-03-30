@@ -7,7 +7,9 @@ export default defineConfig({
         pluginVue(),
         legacyDepsCompat({
             postcss: {
-                configDir: 'compat'
+                // useBuiltinPostcss: false,
+                // configDir: 'compat',
+                customPostcssLoaderOptions: { config: { path: 'compat' } }
             }
         }),
     ],
