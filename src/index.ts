@@ -3,6 +3,7 @@ import moduleAlias from 'module-alias';
 import postcssrc from 'postcss-load-config';
 import { createRequire } from 'module';
 import path from 'path';
+import fs from 'fs';
 
 export type Options = {
   /**
@@ -39,12 +40,38 @@ export type Options = {
   } | false;
 };
 
+function setWebpackAlias() {
+  const webpackPath = require.resolve('webpack-v5').replace(/(.*[\\/]webpack-v5).*/, '$1');
+  moduleAlias.addAlias('webpack', webpackPath);
+  const acceptSuffix = ['.js', '.json'];
+  const readdir = (dir: string) => {
+    for (const dirent of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (dirent.name === 'node_modules') continue;
+      const filePath = path.join(dir, dirent.name);
+      if (dirent.isDirectory()) {
+        readdir(filePath);
+      } else if (acceptSuffix.some((suffix) => filePath.endsWith(suffix))) {
+        const relativePath = filePath.replace(webpackPath, 'webpack');
+        // console.log(relativePath, filePath);
+        moduleAlias.addAlias(relativePath, filePath);
+        if (relativePath.endsWith('.js')) {
+          moduleAlias.addAlias(relativePath.replace(/\.js$/, ''), filePath);
+          if (relativePath.endsWith('/index.js')) {
+            moduleAlias.addAlias(path.dirname(relativePath), filePath);
+          }
+        }
+      }
+    }
+  }
+  readdir(webpackPath);
+}
+
 const pluginName = 'plugin:legacy-deps-compat';
 
 export default function rsbuildPluginLegacyDeps(options: Options = {}): RsbuildPlugin {
   const require = createRequire(import.meta.url);
   if (options.webpack !== false) {
-    moduleAlias.addAlias('webpack', require.resolve('webpack-v5').replace(/(.*[\\/]webpack).*/, '$1'));
+    setWebpackAlias();
   }
   if (options.postcss) {
     // https://github.com/web-infra-dev/rsbuild/blob/v0.5.4/packages/shared/src/css.ts#L71-L73

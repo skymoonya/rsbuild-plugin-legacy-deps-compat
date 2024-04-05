@@ -14,8 +14,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "release": "release-it",
-    "build": "npm run clean && unbuild",
-    "clean": "rimraf dist"
+    "build": "unbuild"
   },
   "keywords": [
     "rsbuild",
@@ -28,6 +27,7 @@
   "author": "skymoonya",
   "license": "MIT",
   "dependencies": {
+    "fast-glob": "^3.3.2",
     "module-alias": "^2.2.3",
     "postcss-load-config": "^5.0.3",
     "webpack-v5": "npm:webpack@^5.0.0"
@@ -35,7 +35,6 @@
   "devDependencies": {
     "@rsbuild/core": "^0.5.4",
     "release-it": "^17.1.1",
-    "rimraf": "^5.0.5",
     "typescript": "^5.4.3",
     "unbuild": "^2.0.0"
   },
