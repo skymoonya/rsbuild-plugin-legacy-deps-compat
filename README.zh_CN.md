@@ -11,8 +11,8 @@ npm i rsbuild-plugin-legacy-deps-compat -D
 ```
 2. 配置 rsbuild
 ```js
-import { defineConfig } from'@rsbuild/core'
-import legacyDepsCompat from'rsbuild-plugin-legacy-deps-compat'
+import { defineConfig } from '@rsbuild/core'
+import legacyDepsCompat from 'rsbuild-plugin-legacy-deps-compat'
 
 export default defineConfig({
   plugins: [
@@ -21,15 +21,19 @@ export default defineConfig({
 
     // 项目中使用了任意的 webpack 和 postcss@<7 ，但是想在rsbuild中使用 postcss@8
     legacyDepsCompat({
-      // 将 postcss.config.js 放在 compat 目录下
-      configDir: 'compat',
+      postcss: {
+        // 将 postcss.config.js 放在 compat 目录下
+        configDir: 'compat',
+      },
     }),
 
     // 项目中使用了任意版本的 webpack 并且想使用项目中之前已经存在的 postcss
     legacyDepsCompat({
-      customPostcssLoaderOptions: {
-        // 这是填写 postcss-loader 的配置
-      }
+      postcss: {
+        customPostcssLoaderOptions: {
+          // 这里填写 postcss-loader 的配置
+        },
+      },
     }),
   ]
 })
