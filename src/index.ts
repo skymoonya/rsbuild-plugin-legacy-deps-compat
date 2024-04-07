@@ -40,6 +40,8 @@ export type Options = {
   } | false;
 };
 
+const require = createRequire(import.meta.url);
+
 function setWebpackAlias() {
   const webpackPath = require.resolve('webpack-v5').replace(/(.*[\\/]webpack-v5).*/, '$1');
   moduleAlias.addAlias('webpack', webpackPath);
@@ -69,19 +71,17 @@ function setWebpackAlias() {
 const pluginName = 'plugin:legacy-deps-compat';
 
 export default function rsbuildPluginLegacyDeps(options: Options = {}): RsbuildPlugin {
-  const require = createRequire(import.meta.url);
-  if (options.webpack !== false) {
-    setWebpackAlias();
-  }
-  if (options.postcss) {
+  const { webpack = true, postcss = {} } = options;
+  if (webpack) setWebpackAlias();
+  if (postcss) {
     // https://github.com/web-infra-dev/rsbuild/blob/v0.5.4/packages/shared/src/css.ts#L71-L73
     moduleAlias.addAlias('../compiled/postcss-load-config', require.resolve('../postcss-load-config.cjs'));
   }
   return {
     name: pluginName,
     setup(api) {
-      if (options.postcss) {
-        const { configDir = '', clearBuiltinPlugins = true, customPostcssLoaderOptions } = options.postcss;
+      if (postcss) {
+        const { configDir = '', clearBuiltinPlugins = true, customPostcssLoaderOptions } = postcss;
         if (customPostcssLoaderOptions) {
           const projectRequire = createRequire(path.resolve('index.js'));
           api.modifyBundlerChain((chain, { CHAIN_ID }) => {
