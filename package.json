@@ -28,7 +28,6 @@
   "author": "skymoonya",
   "license": "MIT",
   "dependencies": {
-    "fast-glob": "^3.3.2",
     "module-alias": "^2.2.3",
     "postcss-load-config": "^5.0.3",
     "webpack-v5": "npm:webpack@^5.0.0"
