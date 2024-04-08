@@ -8,7 +8,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./empty-loader": "./empty-loader.cjs"
   },
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
@@ -43,7 +44,8 @@
   },
   "files": [
     "dist",
-    "postcss-load-config.cjs"
+    "postcss-load-config.cjs",
+    "empty-loader.cjs"
   ],
   "repository": {
     "type": "git",

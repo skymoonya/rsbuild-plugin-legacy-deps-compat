@@ -27,7 +27,7 @@ export default defineConfig({
       },
     }),
 
-    // Any version of webpack and want to use the previously existing postcss in the project.
+    // Any version of webpack and want to use custom postcss-loader.
     legacyDepsCompat({
       postcss: {
         customPostcssLoaderOptions: {
@@ -47,4 +47,24 @@ export default defineConfig({
 | postcss                           | `false\|object` | `{}`       | `postcss` related configuration, set to `false` for no changes |
 | postcss.clearBuiltinPlugins       | `boolean`       | `true`     | Whether to clear built-in `postcss` plugins                    |
 | postcss.configDir                 | `string`        | `./`       | The directory where the `postcss` configuration file is located|
-| postcss.customPostcssLoaderOptions| `any`           | `undefined`| `postcss-loader` options, setting this will use a custom `postcss-loader`. Make sure you have installed `postcss-loader`和`postcss`.|
+| postcss.customPostcssLoaderOptions| `any`           | `undefined`| `postcss-loader` options, setting this will use a custom `postcss-loader`. Make sure you have installed `postcss-loader`.|
+
+## Encountered Component Library Style Issues with Custom `postcss-loader`
+```js
+module.exports = ":root{--van-swipe-indicator-size:0.12rem;}"
+```
+If the styles of a component library (such as `vant`) become as shown above, although the specific cause is not known, it has been found through testing that adding an empty loader before the `postcss-loader` can resolve the issue. An empty `loader` has already been prepared for this purpose.
+```js
+export default {
+  // ... other rsbuild configuration
+  tools: {
+    bundlerChain(chain) {
+      chain.module
+        .rule('css')
+        .use('empty-loader')
+        .loader(require.resolve('rsbuild-plugin-legacy-deps-compat/empty-loader'))
+        .before('postcss');
+    },
+  },
+};
+```

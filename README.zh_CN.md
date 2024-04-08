@@ -27,7 +27,7 @@ export default defineConfig({
       },
     }),
 
-    // 项目中使用了任意版本的 webpack 并且想使用项目中之前已经存在的 postcss
+    // 项目中使用了任意版本的 webpack 并且想使用自定义的 postcss-loader
     legacyDepsCompat({
       postcss: {
         customPostcssLoaderOptions: {
@@ -42,9 +42,29 @@ export default defineConfig({
 ## 配置
 
 | 名称                              | 类型            | 默认值     | 描述                                     |
-| --------------------------------- | -------------- | ---------- | ---------------------------------------- |
-| webpack                           | `boolean`      | `true`     | 是否给`webpack`设置别名                   |
+| --------------------------------- | -------------- | ---------- | -------------------------------------- |
+| webpack                           | `boolean`      | `true`     | 是否给`webpack`设置别名                  |
 | postcss                           | `false\|object`| `{}`       | `postcss`配置，设置为`false`不做任何修改   |
 | postcss.clearBuiltinPlugins       | `boolean`      | `true`     | 是否清除内置`postcss`插件件               |
 | postcss.configDir                 | `string`       | `./`       | `postcss`配置文件所在目录                 |
-| postcss.customPostcssLoaderOptions| `any`          | `undefined`| `postcss-loader`配置，设置此项后将会使用自定义的`postcss-loader`，请确保已经安装了`postcss-loader`和`postcss`|
+| postcss.customPostcssLoaderOptions| `any`          | `undefined`| `postcss-loader`配置，设置此项后将会使用自定义的`postcss-loader`，请确保已经安装了`postcss-loader`|
+
+## 使用自定义`postcss-loader`遇到的组件库样式问题
+```js
+module.exports = ":root{--van-swipe-indicator-size:0.12rem;}"
+```
+如果遇到组件库的样式变成上面这样，虽然不知道具体原因，但是经过测试在`postcss-loader`之前加入一个空的`loader`可以解决问题，这里已经为你准备了这个`loader`
+```js
+export default {
+  // ... other rsbuild configuration
+  tools: {
+    bundlerChain(chain) {
+      chain.module
+        .rule('css')
+        .use('empty-loader')
+        .loader(require.resolve('rsbuild-plugin-legacy-deps-compat/empty-loader'))
+        .before('postcss');
+    },
+  },
+};
+```
