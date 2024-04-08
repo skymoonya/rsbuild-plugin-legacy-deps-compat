@@ -1,3 +1,3 @@
-module.exports = function cssCompatLoader (content) {
+module.exports = function emptyLoader (content) {
   return content;
 }
