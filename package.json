@@ -1,7 +1,7 @@
 {
   "name": "rsbuild-plugin-legacy-deps-compat",
   "version": "0.1.4",
-  "description": "support rsbuild in old project",
+  "description": "rsbuild is supported in projects that use webpack@<=4 and postcss<=7",
   "type": "module",
   "exports": {
     ".": {

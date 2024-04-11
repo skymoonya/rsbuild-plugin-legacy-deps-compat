@@ -103,12 +103,14 @@ export default function rsbuildPluginLegacyDeps(options: Options = {}): RsbuildP
               const postcssOptions = await postcssrc({}, path.resolve(configDir!));
               return mergeRsbuildConfig(config, {
                 tools: {
-                  postcss(opts) {
-                    if (!clearBuiltinPlugins && opts.postcssOptions?.plugins) {
-                      if (!postcssOptions.plugins) postcssOptions.plugins = [];
-                      postcssOptions.plugins.push(...opts.postcssOptions.plugins as any);
+                  postcss(opts, { addPlugins }) {
+                    if (!clearBuiltinPlugins) {
+                      const { plugins, ...otherOptions } = postcssOptions
+                      opts.postcssOptions = { ...opts.postcssOptions, ...otherOptions };
+                      addPlugins(plugins);
+                    } else {
+                      opts.postcssOptions = postcssOptions;
                     }
-                    opts.postcssOptions = postcssOptions;
                   },
                 },
               });
