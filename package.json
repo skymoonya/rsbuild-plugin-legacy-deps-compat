@@ -9,7 +9,9 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
     },
-    "./empty-loader": "./empty-loader.cjs"
+    "./empty-loader": "./empty-loader.cjs",
+    "./postcss-load-config": "./postcss-load-config.cjs",
+    "./*": "./*"
   },
   "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",

@@ -48,23 +48,20 @@ export default defineConfig({
 | postcss.clearBuiltinPlugins       | `boolean`      | `true`     | 是否清除内置`postcss`插件件               |
 | postcss.configDir                 | `string`       | `./`       | `postcss`配置文件所在目录                 |
 | postcss.customPostcssLoaderOptions| `any`          | `undefined`| `postcss-loader`配置，设置此项后将会使用自定义的`postcss-loader`，请确保已经安装了`postcss-loader`|
+| postcss.addEmptyLoader            | `boolean`      | `false`    | 是否在`postcss-loader`之前新增一个`empty-loader`|
 
 ## 使用自定义`postcss-loader`遇到的组件库样式问题
 ```js
 module.exports = ":root{--van-swipe-indicator-size:0.12rem;}"
 ```
-如果遇到组件库的样式变成上面这样，虽然不知道具体原因，但是经过测试在`postcss-loader`之前加入一个空的`loader`可以解决问题，这里已经为你准备了这个`loader`
+如果遇到组件库的样式变成上面这样，虽然不知道具体原因，但是经过测试在`postcss-loader`之前加入一个空的`loader`可以解决问题，这里已经内置到了配置之中
 ```js
-export default {
-  // ... other rsbuild configuration
-  tools: {
-    bundlerChain(chain) {
-      chain.module
-        .rule('css')
-        .use('empty-loader')
-        .loader(require.resolve('rsbuild-plugin-legacy-deps-compat/empty-loader'))
-        .before('postcss');
-    },
-  },
-};
+export default defineConfig({
+  plugins: [
+    legacyDepsCompat({
+      customPostcssLoaderOptions: {},
+      addEmptyLoader: true,
+    }),
+  ],
+});
 ```

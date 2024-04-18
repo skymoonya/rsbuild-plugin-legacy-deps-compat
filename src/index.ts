@@ -37,6 +37,11 @@ export type Options = {
      * @default undefined
      */
     customPostcssLoaderOptions?: any;
+    /**
+     * Whether to add an empty-loader before postcss-loader
+     * @default false
+     */
+    addEmptyLoader?: boolean;
   } | false;
 };
 
@@ -74,14 +79,14 @@ export default function rsbuildPluginLegacyDeps(options: Options = {}): RsbuildP
   const { webpack = true, postcss = {} } = options;
   if (webpack) setWebpackAlias();
   if (postcss) {
-    // https://github.com/web-infra-dev/rsbuild/blob/v0.6.0/packages/shared/src/css.ts#L71-L73
+    // https://github.com/web-infra-dev/rsbuild/blob/v0.6.3/packages/shared/src/css.ts#L71-L73
     moduleAlias.addAlias('../compiled/postcss-load-config', require.resolve('../postcss-load-config.cjs'));
   }
   return {
     name: pluginName,
     setup(api) {
       if (postcss) {
-        const { configDir = '', clearBuiltinPlugins = true, customPostcssLoaderOptions } = postcss;
+        const { configDir = '', clearBuiltinPlugins = true, customPostcssLoaderOptions, addEmptyLoader = false } = postcss;
         if (customPostcssLoaderOptions) {
           const projectRequire = createRequire(path.resolve('index.js'));
           api.modifyBundlerChain((chain, { CHAIN_ID }) => {
@@ -116,6 +121,22 @@ export default function rsbuildPluginLegacyDeps(options: Options = {}): RsbuildP
               });
             } catch(e: any) {
               logger.warn(`[${pluginName}] ${e.message ?? e}`);
+            }
+          });
+        }
+        if (addEmptyLoader) {
+          api.modifyBundlerChain((chain, { CHAIN_ID }) => {
+            const emptyLoader = require.resolve('../empty-loader.cjs');
+            const ruleIds = [
+              CHAIN_ID.RULE.CSS,
+              CHAIN_ID.RULE.SASS,
+              CHAIN_ID.RULE.LESS,
+              CHAIN_ID.RULE.STYLUS,
+            ];
+            for (const ruleId of ruleIds) {
+              if (chain.module.rules.has(ruleId)) {
+                chain.module.rule(ruleId).use('empty-loader').loader(emptyLoader).before('postcss');
+              }
             }
           });
         }

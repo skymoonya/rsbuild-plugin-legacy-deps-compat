@@ -10,6 +10,7 @@ export default defineConfig({
                 // configDir: 'compat',
                 customPostcssLoaderOptions: { config: { path: 'compat' } },
                 // clearBuiltinPlugins: false,
+                addEmptyLoader: true,
             }
         }),
     ],
@@ -29,14 +30,5 @@ export default defineConfig({
                 }
             }
         }
-    },
-    tools: {
-        bundlerChain(chain) {
-          chain.module
-            .rule('css')
-            .use('empty-loader')
-            .loader(require.resolve('../empty-loader'))
-            .before('postcss');
-        },
     },
 });
